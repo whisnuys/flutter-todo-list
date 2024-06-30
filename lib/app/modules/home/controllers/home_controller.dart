@@ -1,17 +1,22 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_todo_app/app/data/models/task.dart';
+import 'package:flutter_todo_app/app/data/services/storage/storage_repository.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  //TODO: Implement HomeController
+  StorageRepository storageRepository;
+  HomeController({required this.storageRepository});
 
-  final count = 0.obs;
+  final formKey = GlobalKey<FormState>();
+  final editController = TextEditingController();
+  final chipIndex = 0.obs;
+  final tasks = <Task>[].obs;
+
   @override
   void onInit() {
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
+    tasks.assignAll(storageRepository.readTasks());
+    ever(tasks, (_) => storageRepository.writeTasks(tasks));
   }
 
   @override
@@ -19,5 +24,15 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
-  void increment() => count.value++;
+  void changeChipIndex(int index) {
+    chipIndex.value = index;
+  }
+
+  bool addTask(Task task) {
+    if (tasks.contains(task)) {
+      return false;
+    }
+    tasks.add(task);
+    return true;
+  }
 }
